@@ -3,12 +3,17 @@ namespace Megaads\Laravelmailservice\Services;
 
 class EmailService
 {
-    public function sendMail($options) {
+    public function sendMail($options=[]) {
         $emailService = env('EMAIL_SERVICE_URL');
         if ( !$options ) {
-            
+            throw new \Exception("Invalid Aguments! ");
         }
         $token = $this->refreshToken($emailService);
+        if ( !empty($token) ) {
+            $options['token'] = $token;
+            $result = $this->sendHttpRequest($emailService . '/api/send-mail', "POST", $options);
+            return $result;
+        }
     }
 
     private function refreshToken($emailService) {
